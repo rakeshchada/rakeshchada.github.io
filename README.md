@@ -1,2 +1,1 @@
-# rakeshchada.github.io
-My blog
+### My blog on Deep Learning and Natural Language Processing
