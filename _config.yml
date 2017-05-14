@@ -1,0 +1,29 @@
+# Site Settings
+title:               Rakesh Chada's Blog
+tagline:             Deep Learning & Natural Language Processing
+description:
+baseurl:            "/" #"/nn"
+url:                "https://rakeshchada.github.io"
+github:
+  url:               "" # "https://rakeshchada.github.io"
+author:
+  name:              "Rakesh Chada"
+  twitter:           "RakC3"
+  github:            "rakeshchada"
+  linkedin:          "rakesh-chada-23834624"
+navigation:
+- title: About
+  url: /about
+- title: Posts
+  url: /writing
+- title: Contact
+  url: /contact
+
+paginate:            5
+disqus:              "rakeshchada"
+
+# Build settings
+markdown:            kramdown
+highlighter:         rouge
+permalink:           none
+gems:                [jekyll-paginate]
