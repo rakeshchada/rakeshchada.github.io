@@ -5,7 +5,7 @@ description:
 baseurl:            "/" #"/nn"
 url:                "https://rakeshchada.github.io"
 github:
-  url:               "" # "https://rakeshchada.github.io"
+  url:               "https://rakeshchada.github.io"
 author:
   name:              "Rakesh Chada"
   twitter:           "RakC3"
