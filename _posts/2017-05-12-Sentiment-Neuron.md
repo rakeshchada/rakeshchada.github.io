@@ -9,7 +9,7 @@ tags: [Deep Learning,Sentiment Analysis]
 
 <!--excerpt.start-->I recently came across a research paper ([<cite>Radford et al.,</cite>](https://arxiv.org/abs/1704.01444){:target="_blank"}) that quite fascinated me. The authors discovered that a single neuron captured the sentiment of an entire piece of text. They go even further and show that it performed very well on sentiment classification tasks even with zero supervision. What not! They even generate coherent pieces of text by fixing the neuron’s value.<!--excerpt.end-->
 
-This isn’t the first time someone discovered such interpretable neurons though. [<cite>Karpathy et al.,</cite>](https://arxiv.org/abs/1506.02078){:target="_blank"}, for instance, discovered neurons that activated inside quotes, *if* statements in a code block etc. This was explained in great detail in [this](https://karpathy.github.io/2015/05/21/rnn-effectiveness/){:target="_blank"} great blog post. Infact that post inspired the name for this post of mine :) However, sentiment is a high-level representation. It has more to do with a deeper understanding of the semantics of the text and not just its syntactical structure. The fact that a single neuron captured the whole sentiment is mind boggling. It means that a single floating point number is all it takes to classify the sentiment of a paragraph. How fascinating is that?!
+This isn’t the first time someone discovered such interpretable neurons though. [<cite>Karpathy et al.,</cite>](https://arxiv.org/abs/1506.02078){:target="_blank"}, for instance, discovered neurons that activated inside quotes, *if* statements in a code block etc. This was explained in detail in [this](https://karpathy.github.io/2015/05/21/rnn-effectiveness/){:target="_blank"} great blog post. In fact that post inspired the name for this post of mine :) However, sentiment is a high-level representation. It has more to do with a deeper understanding of the semantics of the text and not just its syntactical structure. The fact that a single neuron captured the whole sentiment is mind boggling. It means that a single floating point number is all it takes to classify the sentiment of a paragraph. How fascinating is that?!
 
 I personally wanted to explore this in much detail. Thankfully, the authors have open sourced the model they have trained for approximately one month (!) along with some of their code base. I added the sentiment neuron heatmap visualization to it and made some other modifications. I chose Yelp reviews binary dataset introduced in [<cite>Zhang et al.,</cite>](https://arxiv.org/abs/1509.01626){:target="_blank"} for the analysis. There are ~600,000 reviews in total.
 
@@ -19,7 +19,7 @@ It all starts from the character-level language modeling task. The goal is to pr
 
 ### Sentiment Neuron Discovery
 
-The first question that intrigued me was - *How did authors discover this sentiment neuron in the first place?* I mean, there were like 4096 neurons in the output layer. Did they visualize each one of those trying to find some patterns? May be not. But if you read the paper carefully, you would find that they trained linear models on top of those 4096 neurons using L1 regularization. Given that there's a model with 4096 features, discovering this specific feature would then boil down to the matter of feature contributions (weights). If a single neuron solved almost the entire classification task, then the contribution from it should be very high and noticeable.
+The first question that intrigued me was - *How did the authors discover this sentiment neuron in the first place?* I mean, there were like 4096 neurons in the output layer. Did they visualize each one of those trying to find some patterns? Maybe not. But if you read the paper carefully, you would find that they trained linear models on top of those 4096 neurons using L1 regularization. Given that there's a model with 4096 features, discovering this specific feature would then boil down to the matter of feature contributions (weights). If a single neuron solved almost the entire classification task, then the contribution from it should be very high and noticeable.
 
 Let’s see if that is the case for our sentiment neuron. This is the graph of feature contributions that I produced by training on Yelp dataset for sentiment classification.
 
@@ -38,7 +38,7 @@ Coming to our Yelp classification task, I tried the unsupervised classification 
 
 ### Visualization of the sentiment neuron
 
-A good way to gain intuition on what’s going under the hood is to visualize stuff. Visualization can be challenging for LSTMs but fortunately we just have a single neuron to track in this case. Karpathy had done some [fantastic](https://arxiv.org/abs/1506.02078) work on visualizing RNNs. Following similar ideas, I built some handy python functions that help visualize the sentiment neuron. As this is a character level model, we can track the values of sentiment neuron as it processes each character. These values can then be represented as a heatmap of sentiments. One such heatmap can be seen below:
+A good way to gain intuition on what’s going on under the hood is to visualize stuff. Visualization can be challenging for LSTMs but fortunately we just have a single neuron to track in this case. Karpathy had done some [fantastic](https://arxiv.org/abs/1506.02078) work on visualizing RNNs. Following similar ideas, I built some handy python functions that help visualize the sentiment neuron. As this is a character level model, we can track the values of sentiment neuron as it processes each character. These values can then be represented as a heatmap of sentiments. One such heatmap can be seen below:
 
 ![](/images/2-positive-sentiment-tracking.png)
 *Sentiment Heat map for a review*
@@ -105,7 +105,7 @@ We have seen how the sentiment neuron performed with zero supervision. I’ve al
 
 ### Text Generation
 
-The neural network we were talking about all through was trained to predict next characters. So it wouldn’t be a justice if we don’t generate some samples out of it :)!
+The neural network we were talking about all through was trained to predict next characters. So it wouldn’t be justice if we don’t generate some samples out of it :)!
 
 Here’s what it generated when asked to start with “Hmm”.
 
