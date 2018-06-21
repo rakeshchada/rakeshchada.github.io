@@ -151,7 +151,7 @@ This framework should particularly suit the word embeddings quite well. So let�
 
 Here’s an example animation of the how word embeddings changed (when tuned) on the yelp binary sentiment classification task. They are initialized with the 50 dimensional Glove word vectors.
 
-![](/images/neural-embedding-animation/yelp-neural-embedding-animation.gif)
+![](/images/neural-embedding-animation/yelp-embedding-animation.gif)
 
 It’s fascinating how the word _food_ which was quite distant in space from the actual instances of _food_ such as _ramen_, _pork_, etc moved closer to them as we tuned the embeddings. So the model probably learnt that all those _ramen_, _pork_ etc are instances of _food_. Similarly, we also see _table_ move closer to _restaurant_ and so on. The animation makes it very easy to spot these kinds of interesting patterns.
 
