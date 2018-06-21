@@ -2,7 +2,7 @@
 layout: post
 title: "The unreasonable effectiveness of one neuron"
 categories:
-tags: [Deep Learning,Sentiment Analysis]
+tags: [Deep Learning, Natural Language Processing, Sentiment Analysis]
 ---
 
 (**All my experiments and visualizations can be viewed in [this](https://github.com/rakeshchada/generating-reviews-discovering-sentiment/blob/master/Sentiment-Neuron-Yelp.ipynb){:target="_blank"} jupyter notebook**).
