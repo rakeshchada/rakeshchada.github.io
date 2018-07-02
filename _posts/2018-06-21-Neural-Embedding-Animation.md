@@ -125,9 +125,9 @@ Here’s an animation of what the representations evolved to after 5 epochs of t
 
 ![](/images/neural-embedding-animation/yelp-repr-evolution.gif)
 
-You see that the two clusters got denser in terms of their respective classes and the network’s doing better in separating the two classes.
+You can see that the two clusters got denser in terms of their respective classes and the network’s doing better in separating the two classes.
 
-*Side note: I was doing these animations for representation changes between the epochs. But there's no reason why one shouldn't even more granular - say mini-batches or half-epoch or what not. That might help discover even more granular variations.*
+*Side note: I was doing these animations for representational changes between the epochs. But there's no reason why one shouldn't go even more granular - say mini-batches or half-epoch or what not. That might help discover even more granular variations.*
 
 --------
 
@@ -144,7 +144,7 @@ All red dots represent `obscene` class and the green dots represent `non-obscene
 
 ![](/images/neural-embedding-animation/toxic-repr-evolution.gif)
 
-You see the BiLSTM here does a better job separating the two classes.
+You can see the BiLSTM here does a better job separating the two classes.
 
 -----------
 
@@ -153,7 +153,7 @@ You see the BiLSTM here does a better job separating the two classes.
 I should say I love word embeddings and they are a must-try for me in any NLP related analysis. 
 This framework should particularly suit the word embeddings quite well. So let’s see what we can understand about them using this.
 
-Here’s an example animation of the how word embeddings changed (when tuned) on the yelp binary sentiment classification task. They are initialized with the 50 dimensional Glove word vectors.
+Here’s an example animation of the how word embeddings changed when tuned on the yelp task. They were initialized with the 50 dimensional Glove word vectors.
 
 ![](/images/neural-embedding-animation/yelp-embedding-animation.gif)
 
