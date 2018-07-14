@@ -2,10 +2,33 @@
 layout: post
 title: "Understanding Neural Networks by embedding hidden representations"
 categories:
-tags: [Deep Learning, Visualization, Embeddings]
+tags: [Deep Learning, Natural Language Processing, Neural Networks, Visualization, Embeddings]
 ---
 
-<!--excerpt.start-->It's always great fun to visualize neural networks. For a supervised learning setting, the training process of a neural network can be thought of as learning a function that transforms a set of input data points into a representation in which the classes are separable by a linear classifier. I was interested in producing visualizations that shed more light into this training process by leveraging those (hidden) representations. Such visualizations can reveal interesting insights about the performance of the neural network.
+<meta charset="utf-8">
+<html>
+<head>
+<link rel="stylesheet" href="css/embedding-animation/styles.css">
+</head>
+
+<body>
+
+<div id="grid">
+    <div class="startelem"><span class="btn" id="start">Start</span></div>
+    <div class="resetelem"><span class="btn" id="reset">Reset</span></div>
+    <div id="chart"></div>
+    <div class="sliderelem"><input type="range" id="slider" class="slider" min="0" max="10000" value="0" oninput="sliderInput()"></div>
+</div>
+<p style="text-align: center; font-size: 15px">An interactive visualization of word embeddings</p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+</body>
+</html>
+
+
+<!--excerpt.start-->It's always great fun to visualize neural networks. We previously saw how [visualizing a neuron's activation](https://rakeshchada.github.io/Sentiment-Neuron.html){:target="_blank"} revealed fascinating insights. For a supervised learning setting, the training process of a neural network can be thought of as learning a function that transforms a set of input data points into a representation in which the classes are separable by a linear classifier. So, this time, I was interested in producing visualizations that shed more light into this training process by leveraging those (hidden) representations. Such visualizations can reveal interesting insights about the performance of the neural network.
 
 I brainstormed several ideas and ended up getting a great foundation from the excellent Andrej Karpathy’s [work](https://cs.stanford.edu/people/karpathy/cnnembed/){:target="_blank"}.
 
@@ -14,9 +37,9 @@ The idea is simple and can be illustrated briefly in the steps below:
   2. Once it's trained, produce the final hidden representation (embedding) for each data point in the validation/test data. This hidden representation is basically the weights of the final layer in the neural network. This representation is a close proxy to what the neural network *thinks* about data for it to classify. 
   3. Reduce the dimensionality of these weights to be either 2-D or 3-D for visualization purposes. Then, visualize these points on a scatter plot to see how the they are separated in space. There are popular dimensionality reduction techniques such as [T-SNE](https://lvdmaaten.github.io/tsne/){:target="_blank"} or [UMAP](https://github.com/lmcinnes/umap){:target="_blank"} for this purpose.
 
-While the above illustration visualizes the data points *after* the training had completed, I thought an interesting extension would be to instead visualize them at multiple points *during* the training process. It's, then, possible to inspect each of those visualizations individually and draw some insights about how things changed. For instance, we could produce one such visualization after each epoch until the training completes and see how they compare. A further extension of this would be to produce an animation of these visualizations. This can be done by taking each of these static visualizations and interpolating points between them - thereby leading to point-wise transitions. 
+While this illustration visualizes the data points *after* the training had completed, I thought an interesting extension would be to instead visualize them at multiple points *during* the training process. It's, then, possible to inspect each of those visualizations individually and draw some insights about how things changed. For instance, we could produce one such visualization after each epoch until the training completes and see how they compare. A further extension of this would be to produce an animation of these visualizations. This can be done by taking each of these static visualizations and interpolating points between them - thereby leading to point-wise transitions. 
 
-This idea got me excited and I went on to develop a D3.js based Javascript tool that enables us to produce these visualizations. It lets us produce both static visualizations and animations. For animations, we would need to upload two csv files, containing hidden representations, that we want to compare, and it can animate the points across those. We also have control of the animation so we could observe, for instance, how a specific set of points move over the course of the training process. 
+This idea got me excited and I went on to develop a D3.js based Javascript tool that enables us to produce these visualizations. It lets us produce both static visualizations and animations. For animations, we would need to upload two csv files, containing hidden representations, that we want to compare, and it can animate the points across those. We also have control of the animation so we could observe, for instance, how a specific set of points move over the course of the training process. An example of this can be seen at the beginning of this post.
 
 **Link to the tool**: [Neural Embedding Animator](https://bl.ocks.org/rakeshchada/raw/43532fc344082fc1c5d4530110817306/){:target="_blank"}
 
@@ -176,3 +199,220 @@ Please feel free to provide any feedback as you deem suitable!
 
 *PS:
 I tried using [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis){:target="_blank"} to reduce the hidden representations to 2 dimensions and then produced animations from these. A good thing with PCA is that it's not probabilistic and hence the final representations are consistent. However, the local neighborhoods in PCA might not be as interpretable as in T-SNE. So it's a trade-off but if anyone has other ideas on how to get the best of both the worlds - they are much appreciated!*
+
+<script>
+//Width and height
+var w = 600;
+var h = 600;
+var padding = 25;
+var colors;
+var firstData;
+var secondData;
+var words;
+var scalesFirstData;
+var scalesSecondData;
+
+// Reset things
+d3.select("svg")
+  .remove();
+  
+//Create SVG element
+var svg = d3.select("#chart")
+	.append("svg")
+	.attr("width", w)
+	.attr("height", h);
+
+//Define clipping path
+svg.append("clipPath") //Make a new clipPath
+  .attr("id", "chart-area") //Assign an ID
+  .append("rect") //Within the clipPath, create a new rect
+  .attr("x", padding) //Set rect's position and size…
+  .attr("y", padding)
+  .attr("width", w - padding * 3)
+  .attr("height", h - padding * 2);
+
+d3.csv("data/embedding-animation/words.csv", function(d) { return [d['word']]; }, function(d) {words = d});
+
+d3.csv("data/embedding-animation/initial_embeddings.csv",  function(d) { return [d['c1'], d['c2']]; }, function(d) {firstData = d; scalesFirstData = getScales(firstData);});
+
+d3.csv("data/embedding-animation/final_embeddings.csv",  function(d) { return [d['c1'], d['c2']]; }, function(d) {secondData = d; scalesSecondData = getScales(secondData); showPlot(); });
+
+// Define the div for the tooltip
+var div = d3.select("body")
+  .append("div")	
+  .attr("class", "tooltip")				
+  .style("opacity", 0);
+  
+//Create scale functions
+function getScales(dataset) {
+  var xs = dataset.map(function(d) {return d[0]});
+  var ys = dataset.map(function(d) {return d[1]});
+   
+  //Create scale functions
+  var xScale = d3.scale
+  .linear()
+	.domain(
+    [Math.min(...xs), 
+     Math.max(...xs)
+    ]
+  )
+	.range([padding, w - padding * 2]);
+   
+  var yScale = d3.scale
+  .linear()
+	.domain(
+    [Math.min(...ys), 
+    Math.max(...ys)
+    ]
+  )
+	.range([w - padding * 2, padding]);
+  
+  return [xScale, yScale];
+}
+  
+function sliderInput() {
+  makeTransition();
+}
+
+function interpolate(i) {
+    var t = d3.select('#slider')
+    .property('value')/10000;
+    
+    var newX = d3.interpolate(
+      scalesFirstData[0](firstData[i][0]),
+      scalesSecondData[0](secondData[i][0])
+    );
+  
+     var newY = d3.interpolate(
+       scalesFirstData[1](firstData[i][1]),
+       scalesSecondData[1](secondData[i][1])
+     );
+  
+    return [newX(t), newY(t)];
+}
+  
+function makeTransition() {
+ 
+  
+  svg.selectAll("circle")
+    .attr("cx", function(d, i) {
+    var interpolatedX = interpolate(i)[0];
+    return interpolatedX;
+  })
+    .attr("cy", function(d, i) {
+    var interpolatedY = interpolate(i)[1];
+    return interpolatedY;
+  });
+}
+
+function reset() {
+  document.getElementById('slider').value = 0;
+  makeTransition();
+}
+
+//On click, update with new data			
+d3.select("#reset")
+  .on("click", function() {
+  reset();
+});
+
+// On click, start the animation
+d3.select("#start")
+  .on("click", function() {
+  d3.timer(elapsed => { 
+    document.getElementById('slider').value = elapsed * 2
+
+    makeTransition();
+
+    if(elapsed >= 5000) {
+      return true; // this will stop the d3 timer. 
+    }
+  });
+});
+
+var zoom = d3.behavior.zoom()
+    .translate([0, 0])
+    .scale(1)
+    .scaleExtent([1, 8])
+    .on("zoom", zoomed);
+
+function zoomed(){
+    svg.selectAll("circle").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+  
+  svg.selectAll("text").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+}
+
+function showPlot() {
+  var xScale = scalesFirstData[0];
+  var yScale = scalesFirstData[1];
+	
+  //Define X axis
+  var xAxis = d3.svg.axis()
+    .scale(xScale)
+    .orient("bottom")
+    .ticks(5);
+
+  //Define Y axis
+  var yAxis = d3.svg.axis()
+    .scale(yScale)
+    .orient("left")
+    .ticks(5);
+
+  //Create circles
+  svg.append("g") //Create new g
+    .attr("id", "circles") //Assign ID of 'circles'
+    .attr("clip-path", "url(#chart-area)")     //Add reference to clipPath
+    .selectAll("circle")
+    .data(firstData)
+    .enter()
+    .append("circle")
+    .attr("cx", function(d) {
+      return xScale(d[0]);
+    })
+    .attr("cy", function(d) {
+      return yScale(d[1]);
+    })
+    .attr("r", 2)
+    .attr("fill",function() {
+    return "hsl(" + Math.random() * 360 + ",100%,50%)";
+    })
+    .style("opacity", function(d, i) {
+    var opacity = 0.7;
+    if (colors) {opacity = 0.8};
+    return opacity;
+  })
+    .on("mouseover", function(d, i) {		
+            div.transition()		
+              .duration(200)		
+              .style("opacity", .9);
+            var text = i;
+            if (words && i == 0) text = "<ignore>";
+            if (words && i >= 1) text = words[i-1];
+            if (words) text = words[i];
+            div	.html(text)	
+              .style("left", (d3.event.pageX) + "px")
+              .style("top", (d3.event.pageY - 28) + "px");	
+          }
+       )					
+     .on("mouseout", function(d) {		
+            div.transition()		
+              .duration(500)		
+              .style("opacity", 0);	
+          }
+        )
+     .call(zoom);
+
+  //Create X axis
+  // svg.append("g")
+  //   .attr("class", "x axis")
+  //   .attr("transform", "translate(0," + (h - padding) + ")")
+  //   .call(xAxis);
+
+  // //Create Y axis
+  // svg.append("g")
+  //   .attr("class", "y axis")
+  //   .attr("transform", "translate(" + padding + ",0)")
+  //   .call(yAxis);
+
+}
+</script>
