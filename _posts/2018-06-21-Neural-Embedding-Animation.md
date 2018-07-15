@@ -199,6 +199,7 @@ Please feel free to provide any feedback as you deem suitable!
 
 *PS:
 I tried using [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis){:target="_blank"} to reduce the hidden representations to 2 dimensions and then produced animations from these. A good thing with PCA is that it's not probabilistic and hence the final representations are consistent. However, the local neighborhoods in PCA might not be as interpretable as in T-SNE. So it's a trade-off but if anyone has other ideas on how to get the best of both the worlds - they are much appreciated!*
+<!--excerpt.end-->
 
 <script>
 //Width and height
