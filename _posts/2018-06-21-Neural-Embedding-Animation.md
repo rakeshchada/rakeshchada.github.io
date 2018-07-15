@@ -39,7 +39,7 @@ The idea is simple and can be illustrated briefly in the steps below:
 
 While this illustration visualizes the data points *after* the training had completed, I thought an interesting extension would be to instead visualize them at multiple points *during* the training process. It's, then, possible to inspect each of those visualizations individually and draw some insights about how things changed. For instance, we could produce one such visualization after each epoch until the training completes and see how they compare. A further extension of this would be to produce an animation of these visualizations. This can be done by taking each of these static visualizations and interpolating points between them - thereby leading to point-wise transitions. 
 
-This idea got me excited and I went on to develop a D3.js based Javascript tool that enables us to produce these visualizations. It lets us produce both static visualizations and animations. For animations, we would need to upload two csv files, containing hidden representations, that we want to compare, and it can animate the points across those. We also have control of the animation so we could observe, for instance, how a specific set of points move over the course of the training process. An example of this can be seen at the beginning of this post.
+This idea got me excited and I went on to develop a D3.js based Javascript tool that enables us to produce these visualizations. It lets us produce both static visualizations and animations. For animations, we would need to upload two csv files, containing hidden representations, that we want to compare, and it can animate the points across those. We also have control of the animation so we could observe, for instance, how a specific set of points move over the course of the training process. An example of this can be seen at the beginning of this post. Feel free to play around with it!
 
 **Link to the tool**: [Neural Embedding Animator](https://bl.ocks.org/rakeshchada/raw/43532fc344082fc1c5d4530110817306/){:target="_blank"}
 
@@ -176,7 +176,7 @@ You can see the BiLSTM here does a better job separating the two classes.
 I should say I love word embeddings and they are a must-try for me in any NLP related analysis. 
 This framework should particularly suit the word embeddings quite well. So let’s see what we can understand about them using this.
 
-Here’s an example animation of the how word embeddings changed when tuned on the yelp task. They were initialized with the 50 dimensional Glove word vectors.
+Here’s an example animation of the how word embeddings changed when tuned on the yelp task. They were initialized with the 50 dimensional Glove word vectors. This is the same animation that's in the beginning of the post. The colors are removed and labels are added to a few data points for illustration purposes.
 
 ![](/images/neural-embedding-animation/yelp-embedding-animation.gif)
 
@@ -212,6 +212,18 @@ var words;
 var scalesFirstData;
 var scalesSecondData;
 
+function animate() {
+  d3.timer(elapsed => { 
+    document.getElementById('slider').value = elapsed * 2
+
+    makeTransition();
+
+    if(elapsed >= 5000) {
+      return true; // this will stop the d3 timer. 
+    }
+  });
+}
+
 // Reset things
 d3.select("svg")
   .remove();
@@ -235,7 +247,7 @@ d3.csv("data/embedding-animation/words.csv", function(d) { return [d['word']]; }
 
 d3.csv("data/embedding-animation/initial_embeddings.csv",  function(d) { return [d['c1'], d['c2']]; }, function(d) {firstData = d; scalesFirstData = getScales(firstData);});
 
-d3.csv("data/embedding-animation/final_embeddings.csv",  function(d) { return [d['c1'], d['c2']]; }, function(d) {secondData = d; scalesSecondData = getScales(secondData); showPlot(); });
+d3.csv("data/embedding-animation/final_embeddings.csv",  function(d) { return [d['c1'], d['c2']]; }, function(d) {secondData = d; scalesSecondData = getScales(secondData); showPlot(); animate();});
 
 // Define the div for the tooltip
 var div = d3.select("body")
@@ -318,17 +330,7 @@ d3.select("#reset")
 
 // On click, start the animation
 d3.select("#start")
-  .on("click", function() {
-  d3.timer(elapsed => { 
-    document.getElementById('slider').value = elapsed * 2
-
-    makeTransition();
-
-    if(elapsed >= 5000) {
-      return true; // this will stop the d3 timer. 
-    }
-  });
-});
+  .on("click", animate);
 
 var zoom = d3.behavior.zoom()
     .translate([0, 0])
