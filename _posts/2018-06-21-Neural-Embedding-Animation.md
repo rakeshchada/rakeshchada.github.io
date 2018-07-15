@@ -374,14 +374,12 @@ function showPlot() {
     .attr("cy", function(d) {
       return yScale(d[1]);
     })
-    .attr("r", 2)
+    .attr("r", 4)
     .attr("fill",function() {
     return "hsl(" + Math.random() * 360 + ",100%,50%)";
     })
     .style("opacity", function(d, i) {
-    var opacity = 0.7;
-    if (colors) {opacity = 0.8};
-    return opacity;
+    return 0.45;
   })
     .on("mouseover", function(d, i) {		
             div.transition()		
