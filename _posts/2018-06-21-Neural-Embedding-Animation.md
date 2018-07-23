@@ -244,11 +244,19 @@ svg.append("clipPath") //Make a new clipPath
   .attr("width", w - padding * 3)
   .attr("height", h - padding * 2);
 
-d3.csv("data/embedding-animation/words.csv", function(d) { return [d['word']]; }, function(d) {words = d});
-
-d3.csv("data/embedding-animation/initial_embeddings.csv",  function(d) { return [d['c1'], d['c2']]; }, function(d) {firstData = d; scalesFirstData = getScales(firstData);});
-
-d3.csv("data/embedding-animation/final_embeddings.csv",  function(d) { return [d['c1'], d['c2']]; }, function(d) {secondData = d; scalesSecondData = getScales(secondData); showPlot(); animate();});
+d3.csv("data/embedding-animation/words.csv", function(d) { return [d['word']]; }, function(d) {
+  words = d;
+  d3.csv("data/embedding-animation/initial_embeddings.csv",  function(d) { return [d['c1'], d['c2']]; }, function(d) {
+    firstData = d; 
+    scalesFirstData = getScales(firstData);
+    d3.csv("data/embedding-animation/final_embeddings.csv",  function(d) { return [d['c1'], d['c2']]; }, function(d) {
+      secondData = d; 
+      scalesSecondData = getScales(secondData); 
+      showPlot(); 
+      animate();
+    });
+  });
+});
 
 // Define the div for the tooltip
 var div = d3.select("body")
@@ -402,18 +410,5 @@ function showPlot() {
           }
         )
      .call(zoom);
-
-  //Create X axis
-  // svg.append("g")
-  //   .attr("class", "x axis")
-  //   .attr("transform", "translate(0," + (h - padding) + ")")
-  //   .call(xAxis);
-
-  // //Create Y axis
-  // svg.append("g")
-  //   .attr("class", "y axis")
-  //   .attr("transform", "translate(" + padding + ",0)")
-  //   .call(yAxis);
-
 }
 </script>
