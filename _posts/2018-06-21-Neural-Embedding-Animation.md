@@ -202,9 +202,6 @@ I tried using [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis){
 <!--excerpt.end-->
 
 <script>
-//Width and height
-var w = 600;
-var h = 600;
 var padding = 25;
 var colors;
 var firstData;
@@ -231,9 +228,17 @@ d3.select("svg")
   
 //Create SVG element
 var svg = d3.select("#chart")
-	.append("svg")
-	.attr("width", w)
-	.attr("height", h);
+        .append("div")
+        .classed("svg-container", true) //container class to make it responsive
+        .append("svg")
+        //responsive SVG needs these 2 attributes and no width and height attr
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", "0 0 600 600")
+        //class to make it responsive
+        .classed("svg-content-responsive", true); 
+
+var w = parseInt(svg.style("width"), 10);
+var h = parseInt(svg.style("height"), 10);
 
 //Define clipping path
 svg.append("clipPath") //Make a new clipPath
@@ -252,6 +257,7 @@ d3.csv("data/embedding-animation/words.csv", function(d) { return [d['word']]; }
     d3.csv("data/embedding-animation/final_embeddings.csv",  function(d) { return [d['c1'], d['c2']]; }, function(d) {
       secondData = d; 
       scalesSecondData = getScales(secondData); 
+
       showPlot(); 
       animate();
     });
@@ -268,7 +274,7 @@ var div = d3.select("body")
 function getScales(dataset) {
   var xs = dataset.map(function(d) {return d[0]});
   var ys = dataset.map(function(d) {return d[1]});
-   
+
   //Create scale functions
   var xScale = d3.scale
   .linear()
@@ -277,7 +283,7 @@ function getScales(dataset) {
      Math.max(...xs)
     ]
   )
-	.range([padding, w - padding * 2]);
+	.range([padding, Math.ceil(w) - 2 * padding]);
    
   var yScale = d3.scale
   .linear()
@@ -286,7 +292,7 @@ function getScales(dataset) {
     Math.max(...ys)
     ]
   )
-	.range([w - padding * 2, padding]);
+	.range([Math.ceil(w) - 2 * padding, padding]);
   
   return [xScale, yScale];
 }
