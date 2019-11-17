@@ -455,3 +455,7 @@ pre {
 .fa-codepen:hover {
 	color: black;
 }
+
+table, th, td {
+  border: 1px solid black;
+}

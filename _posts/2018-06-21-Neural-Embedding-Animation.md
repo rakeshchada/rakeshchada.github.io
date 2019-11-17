@@ -3,6 +3,7 @@ layout: post
 title: "Understanding Neural Networks by embedding hidden representations"
 categories:
 tags: [Deep Learning, Natural Language Processing, Neural Networks, Visualization, Embeddings]
+related_image: /images/neural-embedding-animation/preview.png
 ---
 
 <meta charset="utf-8">
